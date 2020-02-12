@@ -1,4 +1,4 @@
-# Three Push Buttons three LEDs for MSP430
+# Three Push Buttons Three LEDs for MSP430
 
 Three NO Push Buttons have been connected to P1.5, P1.6, and P1.7, the voltage divider circuitry provides a maximum of 2.7V, which is enough for the MSP430 to register it as a HIGH state.
 
