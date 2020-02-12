@@ -4,7 +4,7 @@ Three NO Push Buttons have been connected to P1.5, P1.6, and P1.7, the voltage d
 
 Three LEDs are connected to the MSP430, where they get a Voltage of 0 (LOW) and 3.2V (HIGH), blue LEDs got a Forward Voltage of 3.5V
 
-Adding three buttons added to the complexity of the code, especially in debouncing the PB. Instead of starting and stoping the timer for the debounce, and instead of using TA0, TA1, and TA2 as timers for the PBs, I used one timer Timer TA0R that is configured in a continous mode (it counts till 0xFFFF then rolls back to 0 and counts again), and enabled the Capture/Compare interrupt (CCIE) for TA0CCR0, TA0CCR1, and TA0CCR2.
+Adding three buttons added to the complexity of the code, especially in debouncing the PB. Instead of starting and stoping the timer for the debounce, and instead of using `TA0`, `TA1`, and `TA2` as timers for the PBs, I used one timer `Timer TA0R` that is configured in a `continous mode` (it counts till 0xFFFF then rolls back to 0 and counts again), and enabled the Capture/Compare interrupt `(CCIE)` for `TA0CCR0`, `TA0CCR1`, and `TA0CCR2`.
 
 Eventually I want to put the MSP430 in a Low Power Mode, where the CPU is switched off, hence no code will be running on the main function. That is why I introduced interrupts, where the uC goes to sleep and when a Rising Edge, Falling Edge, or Capture/Compare IF is set an ISR will be serviced.
 
