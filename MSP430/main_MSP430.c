@@ -1,11 +1,34 @@
+
+/*
+   3V3 *
+       |        |---------|TX   (RD9/RP4/P69)RX|----------|
+1.5BTN0|---/ ---|         |------------------->|          |----|>----|LED0 (RB4) P21
+1.6BTN1|---/ ---|   MSP   |P4.2                |   PIC24  |----|>----|LED1 (RB3) P22
+1.7BTN2|---/ ---|         |<-------------------|          |----|>----|LED2 (RB2) P23
+       |        |         |                    |          |          |
+1.3LCD |---/ ---|         |                    |          |          |
+                |---------|RX  (RD10/RP3/P70)TX|----------|          |
+                 _________ P4.3                 __________           |
+                |___LCD___|                    |___LCD____|          V GND
+
+ * UART Baud Rate 9600 8 bits, No Parity, LSB first, One Stop bit
+ * MSP430 CS 4MHz
+ * PIC24  CS 4MHz
+ *
+ */
+
+
+
 #include <msp430.h> 
 #include "Digital_Input_Output/GPIO.h"
 #include "Digital_Input_Output/Debounce.h"
 #include "Digital_Input_Output/Digital_Input_ISR.h"
 #include "Timer/Debounce_Timer.h"
-#include "UART/Clock_Initialization.h"
+#include "Clock/Clock_Initialization.h"
 #include "UART/Baud_Rate.h"
 #include "UART/UART.h"
+#include "LCD/Init_LCD.h"
+#include "LCD/Display_LCD.h"
 
 #define ENABLE_PINS 0xFFFE
 
@@ -23,6 +46,13 @@ int main(void)
     clock_initialization ();
     baud_rate_setup ();
     init_UART ();
+
+    init_LCD ();
+    init_OneSecond_Delay ();
+
+    displayHelloMsg ();
+
+    TURN_ON_LCD;
 
     _BIS_SR (GIE);//enable global interrupt
 
@@ -95,7 +125,23 @@ __interrupt void Port1_ISR (void)
             ButtonReleasedRoutine(Button2);
         }
         change_edge_isr(Button2);
+        break;
     default:
         break;
     }
+}
+
+#pragma vector = TIMER1_A1_VECTOR
+__interrupt void OneSecond_Delay_ISR (void)
+{
+    switch(TA1IV)
+    {
+    case LCD_DELAY_IF:
+        STOP_ONESEC_LCD_DELAY;
+        displayHelloMsg ();//displayLCD ();//
+        break;
+    default:
+        break;
+    }
+    //TA1CTL &= (~TAIFG);//CLEAR TA1 IF
 }

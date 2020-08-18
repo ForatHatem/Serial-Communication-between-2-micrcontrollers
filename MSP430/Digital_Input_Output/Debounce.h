@@ -14,7 +14,7 @@ enum Button
 {
     Button0 = 0,
     Button1 = 1,
-    Button2 = 2
+    Button2 = 2,
 };
 
 extern int BTN_pressed [3];
