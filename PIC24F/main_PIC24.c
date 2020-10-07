@@ -25,42 +25,31 @@
 #include "Digital_Input_Output/GPIO.h"
 #include "Digital_Input_Output/TOGGLE_LED.h"
 #include "UART/UART_TX_RX.h"
-
-
-//int toggleState[] = {0,0,0};
-
-/*void toggleLED (unsigned int LED)
-{
-    if(LED >= 0 && LED < 3)
-        toggleState[LED] = !toggleState[LED];
-    
-    switch(LED)
-    {
-        case 0:
-            LED0 = toggleState[LED];
-            break;
-        case 1:
-            LED1 = toggleState[LED];
-            break;
-        case 2:
-            LED2 = toggleState[LED];
-            break;
-        default:
-            break;
-    }
-}*/
+#include "LCD.h"
+#include "ToggleLCD.h"
+ 
+unsigned int LED [] = {0,0,0};
 
 void enable_interrupt (void);
 
+
+
 int main(void) 
 {
+        
     init_DigitalOutput ();
+    //init_PortISR ();
     
     setup_UART ();
     setup_UART_Pins ();
     enable_UART ();
     
     init_uart_rx_isr ();
+   
+    InitLCD ();
+    InitToggleLCD();
+    
+    displayHelloMsg ();
     
     enable_interrupt ();
     
@@ -87,11 +76,13 @@ void __attribute__((__interrupt__,no_auto_psv)) _U1RXInterrupt (void)
     if(receivedChar == 'A')
     {
         toggleLED(0);
+        //led[0] = !LED[0];
     }
     
     else if(receivedChar == 'B')
     {
         toggleLED(1);
+        //led[1] != LED[1]       
     }
     
     else if(receivedChar == 'C')
@@ -104,3 +95,52 @@ void __attribute__((__interrupt__,no_auto_psv)) _U1RXInterrupt (void)
 
 
 
+/*
+ void _interrupt__ _Port1_ISR
+ {
+ * static int mode = 0;
+ * 
+ * mode++;
+ * 
+ * if(mode > 4)
+ *  mode = 0;
+ * 
+ * ClearDisplay();
+ * 
+ * if(mode == 0)
+ *  displayHelloMsg ();
+ * else if(mode == 1)
+ *  displayLED(LED);
+ * else if(mode == 2)
+ *  displayComm(CommMode);
+ * else if(mode == 3)
+ *  displayPower(LED,POWER_PER_LED);
+ * else if(mode == 4)
+ *  displayPower(LED,TOTAL_POWER); 
+ *}
+ */
+ 
+void __attribute__((__interrupt__,no_auto_psv)) _INT1Interrupt (void)
+{
+    static int mode = 0;
+    
+    mode++;
+    
+    if(mode > 4)
+        mode = 0;
+    
+    ClearDisplayLCD();
+    
+    if(mode == 0)
+        displayHelloMsg ();
+    else if(mode == 1)
+        displayLED(LED);
+    else if(mode == 2)
+        displayComm(0);
+    else if(mode == 3)
+        displayPower(LED,POWER_PER_LED);
+    else if(mode == 4)
+        displayPower(LED,TOTAL_POWER);
+                
+    _INT1IF = 0;
+}

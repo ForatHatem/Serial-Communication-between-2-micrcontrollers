@@ -50,7 +50,7 @@ void init_uart_rx_isr (void)
     //enable interrupt
     INTCON1bits.NSTDIS = 0;
     
-    IEC0bits.U1RXIE = 1;
+     IEC0bits.U1RXIE = 1;
     
     IFS0bits.U1RXIF = 0;                     
 }

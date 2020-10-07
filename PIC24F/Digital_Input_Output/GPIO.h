@@ -23,6 +23,8 @@
 
 void init_DigitalOutput (void);
 
+void init_PortISR (void);
+
 
 #endif	
 
